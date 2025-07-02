@@ -24,6 +24,7 @@ interface FormData {
   part: string
   recentNews: string
   favoriteBand: string
+  rankingLabel: string
   ranking1: string
   ranking2: string
   ranking3: string
@@ -62,6 +63,7 @@ export default function SelfIntroCardGenerator() {
     part: "",
     recentNews: "",
     favoriteBand: "",
+    rankingLabel: "",
     ranking1: "",
     ranking2: "",
     ranking3: "",
@@ -241,12 +243,12 @@ export default function SelfIntroCardGenerator() {
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="part">パート</Label>
+                    <Label htmlFor="part">高校の部活</Label>
                     <Input
                       id="part"
                       value={formData.part}
                       onChange={(e) => handleInputChange("part", e.target.value)}
-                      placeholder="ギター"
+                      placeholder="バスケットボール"
                     />
                   </div>
                   <div>
@@ -260,7 +262,7 @@ export default function SelfIntroCardGenerator() {
                   </div>
                 </div>
                 <div>
-                  <Label htmlFor="favoriteBand">好きなバンド</Label>
+                  <Label htmlFor="favoriteBand">好きな食べ物</Label>
                   <Input
                     id="favoriteBand"
                     value={formData.favoriteBand}
@@ -271,6 +273,11 @@ export default function SelfIntroCardGenerator() {
                 <div className="space-y-2">
                   <Label>ランキング</Label>
                   <div className="space-y-2">
+                    <Input
+                      value={formData.rankingLabel}
+                      onChange={(e) => handleInputChange("rankingLabel", e.target.value)}
+                      placeholder="ランキング名"
+                    />
                     <Input
                       value={formData.ranking1}
                       onChange={(e) => handleInputChange("ranking1", e.target.value)}
