@@ -18,6 +18,7 @@ export async function POST(request: NextRequest) {
       part: formData.get("part") as string,
       recentNews: formData.get("recentNews") as string,
       favoriteBand: formData.get("favoriteBand") as string,
+      rankingLabel: formData.get("rankingLabel") as string,
       ranking1: formData.get("ranking1") as string,
       ranking2: formData.get("ranking2") as string,
       ranking3: formData.get("ranking3") as string,
@@ -91,7 +92,7 @@ export async function POST(request: NextRequest) {
     let currentY = 40
 
     // タイトル
-    drawText("【じこしょうかい】", 300, currentY + 25, 32, "#3b82f6")
+    drawText("【自己紹介カード】", 300, currentY + 25, 32, "#3b82f6")
     ctx.textAlign = "start"
     currentY += 70
 
@@ -120,18 +121,18 @@ export async function POST(request: NextRequest) {
     currentY += 80
 
     // パート・最近のニュース
-    drawLabeledBox(40, currentY, 250, 60, "パート", data.part)
+    drawLabeledBox(40, currentY, 250, 60, "高校の部活", data.part)
     drawLabeledBox(310, currentY, 250, 60, "最近のニュース", data.recentNews)
     currentY += 80
 
     // 好きなバンド・ランキング
-    drawLabeledBox(40, currentY, 250, 80, "好きなバンド", data.favoriteBand)
+    drawLabeledBox(40, currentY, 250, 80, "好きな食べ物", data.favoriteBand)
 
     // ランキングボックス
     ctx.fillStyle = "white"
     roundRect(310, currentY, 250, 80, 8)
     ctx.fill()
-    drawText("ランキング", 325, currentY + 25, 12, "#6b7280")
+    drawText(`${data.rankingLabel || "ランキング"}`, 325, currentY + 25, 12, "#6b7280")
     drawText(`1. ${data.ranking1 || "未入力"}`, 325, currentY + 45, 14)
     drawText(`2. ${data.ranking2 || "未入力"}`, 325, currentY + 60, 14)
     drawText(`3. ${data.ranking3 || "未入力"}`, 325, currentY + 75, 14)

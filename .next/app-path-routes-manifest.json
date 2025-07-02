@@ -1,0 +1,6 @@
+{
+  "/api/generate-card/route": "/api/generate-card",
+  "/favicon.ico/route": "/favicon.ico",
+  "/_not-found/page": "/_not-found",
+  "/page": "/"
+}
