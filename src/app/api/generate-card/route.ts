@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
       ranking2: formData.get("ranking2") as string,
       ranking3: formData.get("ranking3") as string,
       comment: formData.get("comment") as string,
-      font: formData.get("font") as string,
+      // font: formData.get("font") as string,
       color: formData.get("color") as string,
     }
 
@@ -67,7 +67,7 @@ export async function POST(request: NextRequest) {
     // テキストを描画する関数
     function drawText(text: string, x: number, y: number, fontSize: number, color = "#1f2937", maxWidth?: number) {
       ctx.fillStyle = color
-      ctx.font = `${fontSize}px system-ui, sans-serif`
+      ctx.font = `${fontSize}px system-ui`
       if (maxWidth) {
         ctx.fillText(text, x, y, maxWidth)
       } else {
