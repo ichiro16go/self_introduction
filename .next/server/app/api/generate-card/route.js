@@ -1,5 +1,6 @@
 const CHUNK_PUBLIC_PATH = "server/app/api/generate-card/route.js";
 const runtime = require("../../../chunks/[turbopack]_runtime.js");
+runtime.loadChunk("server/chunks/[externals]_canvas_321d7c67._.js");
 runtime.loadChunk("server/chunks/node_modules_next_b67ab189._.js");
 runtime.loadChunk("server/chunks/[root-of-the-server]__98430659._.js");
 runtime.getOrInstantiateRuntimeModule("[project]/.next-internal/server/app/api/generate-card/route/actions.js [app-rsc] (server actions loader, ecmascript)", CHUNK_PUBLIC_PATH);

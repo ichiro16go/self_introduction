@@ -79,6 +79,7 @@ __turbopack_context__.s({
 });
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/server.js [app-route] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$externals$5d2f$canvas__$5b$external$5d$__$28$canvas$2c$__cjs$29$__ = __turbopack_context__.i("[externals]/canvas [external] (canvas, cjs)");
+// import { readFileSync } from "fs";
 var __TURBOPACK__imported__module__$5b$externals$5d2f$path__$5b$external$5d$__$28$path$2c$__cjs$29$__ = __turbopack_context__.i("[externals]/path [external] (path, cjs)");
 ;
 ;
@@ -112,6 +113,14 @@ async function POST(request) {
             // font: formData.get("font") as string,
             color: formData.get("color")
         };
+        // フォームデータから画像を取得
+        const imageFile = formData.get("image");
+        let uploadedImage = null;
+        if (imageFile && imageFile.size > 0) {
+            const imageBuffer = Buffer.from(await imageFile.arrayBuffer());
+            const { loadImage } = await __turbopack_context__.r("[externals]/canvas [external] (canvas, cjs, async loader)")(__turbopack_context__.i);
+            uploadedImage = await loadImage(imageBuffer);
+        }
         // Canvas作成
         const canvas = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$canvas__$5b$external$5d$__$28$canvas$2c$__cjs$29$__["createCanvas"])(600, 800);
         const ctx = canvas.getContext("2d");
@@ -155,6 +164,33 @@ async function POST(request) {
         gradient.addColorStop(1, selectedColor.colors[1]);
         ctx.fillStyle = gradient;
         ctx.fillRect(0, 0, 600, 800);
+        // 左側に画像を描画
+        if (uploadedImage) {
+            const imageWidth = 280;
+            const imageHeight = 350;
+            const imageX = 30;
+            const imageY = 80;
+            // 画像を角丸で描画
+            ctx.save();
+            roundRect(imageX, imageY, imageWidth, imageHeight, 12);
+            ctx.clip();
+            // アスペクト比を保持して画像を描画
+            const aspectRatio = uploadedImage.width / uploadedImage.height;
+            let drawWidth = imageWidth;
+            let drawHeight = imageHeight;
+            let drawX = imageX;
+            let drawY = imageY;
+            if (aspectRatio > imageWidth / imageHeight) {
+                drawHeight = imageWidth / aspectRatio;
+                drawY = imageY + (imageHeight - drawHeight) / 2;
+            } else {
+                drawWidth = imageHeight * aspectRatio;
+                drawX = imageX + (imageWidth - drawWidth) / 2;
+            }
+            ctx.drawImage(uploadedImage, drawX, drawY, drawWidth, drawHeight);
+            ctx.restore();
+        }
+        // 角丸四角形を描画する関数
         // 角丸四角形を描画する関数
         function roundRect(x, y, width, height, radius) {
             ctx.beginPath();
@@ -196,19 +232,19 @@ async function POST(request) {
         ctx.textAlign = "start";
         currentY += 70;
         // 名前
-        drawLabeledBox(40, currentY, 520, 60, "名前（ニックネーム）", data.name);
+        drawLabeledBox(320, currentY, 260, 60, "名前（ニックネーム）", data.name);
         currentY += 80;
         // 誕生日
         const birthText = data.birthMonth && data.birthDay ? `${data.birthMonth}月 ${data.birthDay}日` : "未入力";
-        drawLabeledBox(40, currentY, 520, 60, "誕生日", birthText);
+        drawLabeledBox(320, currentY, 260, 60, "誕生日", birthText);
         currentY += 80;
         // 学部・学年
-        drawLabeledBox(40, currentY, 250, 60, "学部", data.department);
-        drawLabeledBox(310, currentY, 250, 60, "学年", data.grade ? `${data.grade}年` : "");
+        drawLabeledBox(320, currentY, 125, 60, "学部", data.department);
+        drawLabeledBox(460, currentY, 125, 60, "学年", data.grade ? `${data.grade}年` : "");
         currentY += 80;
         // 出身・MBTI
-        drawLabeledBox(40, currentY, 250, 60, "出身", data.hometown);
-        drawLabeledBox(310, currentY, 250, 60, "MBTI", data.mbti);
+        drawLabeledBox(320, currentY, 125, 60, "出身", data.hometown);
+        drawLabeledBox(460, currentY, 125, 60, "MBTI", data.mbti);
         currentY += 80;
         // 最近のマイブーム・特技
         drawLabeledBox(40, currentY, 250, 60, "最近のマイブーム", data.recentBoom);

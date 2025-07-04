@@ -74,6 +74,7 @@ export default function SelfIntroCardGenerator() {
 
   const [isGenerating, setIsGenerating] = useState(false)
   const [generatedImageUrl, setGeneratedImageUrl] = useState<string | null>(null)
+  const [imagePreview, setImagePreview] = useState<string | null>(null)
 
   const handleInputChange = (field: keyof FormData, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
@@ -83,6 +84,13 @@ export default function SelfIntroCardGenerator() {
     const file = e.target.files?.[0]
     if (file) {
       setFormData((prev) => ({ ...prev, image: file }))
+
+      // プレビュー用のURLを作成
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        setImagePreview(e.target?.result as string)
+      }
+      reader.readAsDataURL(file)
     }
   }
 
@@ -343,8 +351,8 @@ export default function SelfIntroCardGenerator() {
                   </div>
                 </div>
                 <div>
-                  <Label htmlFor="image">画像アップロード（オプション）</Label>
-                  <div className="mt-2">
+                  <Label htmlFor="image">プロフィール画像（オプション）</Label>
+                  <div className="mt-2 space-y-2">
                     <input
                       type="file"
                       id="image"
@@ -352,6 +360,15 @@ export default function SelfIntroCardGenerator() {
                       onChange={handleImageUpload}
                       className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                     />
+                    {imagePreview && (
+                      <div className="mt-2">
+                        <img
+                          src={imagePreview || "/placeholder.svg"}
+                          alt="プレビュー"
+                          className="w-32 h-32 object-cover rounded-lg border"
+                        />
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

@@ -33,6 +33,16 @@ export async function POST(request: NextRequest) {
       color: formData.get("color") as string,
     };
 
+    // フォームデータから画像を取得
+    const imageFile = formData.get("image") as File | null;
+    let uploadedImage = null;
+
+    if (imageFile && imageFile.size > 0) {
+      const imageBuffer = Buffer.from(await imageFile.arrayBuffer());
+      const { loadImage } = await import("canvas");
+      uploadedImage = await loadImage(imageBuffer);
+    }
+
     // Canvas作成
     const canvas = createCanvas(600, 800);
     const ctx = canvas.getContext("2d");
@@ -55,30 +65,51 @@ export async function POST(request: NextRequest) {
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, 600, 800);
 
+    // 左側に画像を描画
+    if (uploadedImage) {
+      const imageWidth = 280;
+      const imageHeight = 350;
+      const imageX = 30;
+      const imageY = 80;
+
+      // 画像を角丸で描画
+      ctx.save();
+      roundRect(imageX, imageY, imageWidth, imageHeight, 12);
+      ctx.clip();
+
+      // アスペクト比を保持して画像を描画
+      const aspectRatio = uploadedImage.width / uploadedImage.height;
+      let drawWidth = imageWidth;
+      let drawHeight = imageHeight;
+      let drawX = imageX;
+      let drawY = imageY;
+
+      if (aspectRatio > imageWidth / imageHeight) {
+        drawHeight = imageWidth / aspectRatio;
+        drawY = imageY + (imageHeight - drawHeight) / 2;
+      } else {
+        drawWidth = imageHeight * aspectRatio;
+        drawX = imageX + (imageWidth - drawWidth) / 2;
+      }
+
+      ctx.drawImage(uploadedImage, drawX, drawY, drawWidth, drawHeight);
+      ctx.restore();
+    }
+
     // 角丸四角形を描画する関数
-    function roundRect(
-      x: number,
-      y: number,
-      width: number,
-      height: number,
-      radius: number
-    ) {
-      ctx.beginPath();
-      ctx.moveTo(x + radius, y);
-      ctx.lineTo(x + width - radius, y);
-      ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
-      ctx.lineTo(x + width, y + height - radius);
-      ctx.quadraticCurveTo(
-        x + width,
-        y + height,
-        x + width - radius,
-        y + height
-      );
-      ctx.lineTo(x + radius, y + height);
-      ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
-      ctx.lineTo(x, y + radius);
-      ctx.quadraticCurveTo(x, y, x + radius, y);
-      ctx.closePath();
+    // 角丸四角形を描画する関数
+    function roundRect(x: number, y: number, width: number, height: number, radius: number) {
+      ctx.beginPath()
+      ctx.moveTo(x + radius, y)
+      ctx.lineTo(x + width - radius, y)
+      ctx.quadraticCurveTo(x + width, y, x + width, y + radius)
+      ctx.lineTo(x + width, y + height - radius)
+      ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height)
+      ctx.lineTo(x + radius, y + height)
+      ctx.quadraticCurveTo(x, y + height, x, y + height - radius)
+      ctx.lineTo(x, y + radius)
+      ctx.quadraticCurveTo(x, y, x + radius, y)
+      ctx.closePath()
     }
 
     // テキストを描画する関数
@@ -91,11 +122,11 @@ export async function POST(request: NextRequest) {
       maxWidth?: number
     ) {
       ctx.fillStyle = color;
-      ctx.font = `${fontSize}px "Noto Sans JP"`
+      ctx.font = `${fontSize}px "Noto Sans JP"`;
       if (maxWidth) {
-        ctx.fillText(text, x, y, maxWidth)
+        ctx.fillText(text, x, y, maxWidth);
       } else {
-        ctx.fillText(text, x, y)
+        ctx.fillText(text, x, y);
       }
     }
 
@@ -128,7 +159,7 @@ export async function POST(request: NextRequest) {
     currentY += 70;
 
     // 名前
-    drawLabeledBox(40, currentY, 520, 60, "名前（ニックネーム）", data.name);
+    drawLabeledBox(320, currentY, 260, 60, "名前（ニックネーム）", data.name);
     currentY += 80;
 
     // 誕生日
@@ -136,15 +167,15 @@ export async function POST(request: NextRequest) {
       data.birthMonth && data.birthDay
         ? `${data.birthMonth}月 ${data.birthDay}日`
         : "未入力";
-    drawLabeledBox(40, currentY, 520, 60, "誕生日", birthText);
+    drawLabeledBox(320, currentY, 260, 60, "誕生日", birthText);
     currentY += 80;
 
     // 学部・学年
-    drawLabeledBox(40, currentY, 250, 60, "学部", data.department);
+    drawLabeledBox(320, currentY, 125, 60, "学部", data.department);
     drawLabeledBox(
-      310,
+      460,
       currentY,
-      250,
+      125,
       60,
       "学年",
       data.grade ? `${data.grade}年` : ""
@@ -152,8 +183,8 @@ export async function POST(request: NextRequest) {
     currentY += 80;
 
     // 出身・MBTI
-    drawLabeledBox(40, currentY, 250, 60, "出身", data.hometown);
-    drawLabeledBox(310, currentY, 250, 60, "MBTI", data.mbti);
+    drawLabeledBox(320, currentY, 125, 60, "出身", data.hometown);
+    drawLabeledBox(460, currentY, 125, 60, "MBTI", data.mbti);
     currentY += 80;
 
     // 最近のマイブーム・特技
